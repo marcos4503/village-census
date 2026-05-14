@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "#A#",
+    " B ",
+    " # "
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:oak_slab"
+    },
+    "A": {
+      "item": "minecraft:book"
+    },
+    "B": {
+      "item": "minecraft:bookshelf"
+    }
+  },
+  "result": {
+    "item": "villagecensus:census_lectern_block",
+    "count": 1
+  }
+}

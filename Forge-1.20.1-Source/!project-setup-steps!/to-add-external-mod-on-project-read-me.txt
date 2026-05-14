@@ -1,0 +1,95 @@
+These steps were runned, to add a External Mod to run with This Project, so when playing this Project,
+the External Mod will run together:
+
+(These steps is necessary to integrating a Mod as a dependency for this Project Mod, or possibly testing
+compatibility with another Mod alongside this Project Mod!)
+
+1.  Make sure that the project was already setup, and that the "Minecraft Development" extension
+    is installed in the IDE.
+
+2.  To start, open the file "build.gradle".
+
+3.  Now, we need to add a guidelines for the case of the External Mod uses Mixins. These guidelines will
+    instruct the remap of the Mixins, so they will work correctly with the names and mappings of this
+    Project Mod. For this, go to the block "minecraft", then go to the block "runs" and then the block
+    "client". At the end of the "client" block, add this text:
+    -
+    // Set a guideline to instruct the Mixin Engine to not use the JSON refmaps inside the External Mods JARs, so the Mixin Engine will try to find the correct methods and classes names according to this Project names mappings
+    property 'mixin.env.remapRefMap', 'true'
+    // Set a guideline to instruct the Mixin Engine to use the file "output.srg" as a Dictionary for the External Mod needed Mixings, pointing for the right methods and classes names according to this Project names mappings
+    property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+4.  Now, we need to add the "Curse Maven" (Curse Forge) repository to the list of Repositories for Gradle
+    consume. All External Mods that we will add, will be obtained from the Curse Maven repository. For this,
+    put the text below, at the end of the "repositories" block:
+    -
+    // Add the "Curse Maven" (Curse Forge) as a available External Mods Repository to consume and find External Mods
+    maven{
+        url 'https://www.cursemaven.com'
+        content{
+            includeGroup "curse.maven"
+        }
+    }
+
+5.  Finally, we will inform what External Mod we will add to this Project Mod. For this, we have 3 types
+    of method to add the External Mod. Before, go to the "dependencies" block.
+    If you need to add the External Mod to only test the External Mod in-game (with the "runClient"), without the
+    Methods, Classes and APIs of the External Mods being available to be accessed by this Project Mod code, you
+    need to use the "runtimeOnly". For this, add the text below, at the end of the "dependencies" block:
+    -
+    // Add the "External Mod" only as Runtime, to run with this Project Mod, ONLY when the "runClient" is runned. With this, the "External Mod" will not be required to the final user of this Project Mod
+    runtimeOnly fg.deobf("curse.maven:modName-modId:jarFileId")
+    -
+    If you need to add the External Mod to only get access and consume Methods, Classes and APIs of the External Mod
+    in this Project Mod code, but not needs that the External Mod runs in the "runClient", add the text below, at the
+    end of the "dependencies" block:
+    -
+    // Add the "External Mod" only as Compile, just enable access of the Project Mod code, to the Methods, Classes and APIs of the "External Mod". With this, the "External Mod" will be required to the final user of this Project Mod
+    compileOnly fg.deobf("curse.maven:modName-modId:jarFileId")
+    -
+    If you need to add the External Mod to test the External Mod in-game (with the "runClient"), and to get access
+    and consume Methods, Classes and APIs of the External Mod in this Project Mod code, add the text below, at the end
+    of the "dependencies" block:
+    // Add the "External Mod" as Implementation. Will run with this Project Mod when on "runClient" and enable access for the Methods, Classes and APIs of "External Mod" for this Project Mod. The "External Mod" will be required to final user
+    implementation fg.deobf("curse.maven:modName-modId:jarFileId")
+    -
+    NOTE: After adding the text of "runtimeOnly", "compileOnly" or "implementation", you need to inform the name of
+          the External Mod, Mod ID and Mod JAR File ID, that will be added to this Project Mod. You can get these informations
+          browsing to a mod page on Curse Forge (like https://www.curseforge.com/minecraft/mc-mods/guard-villagers). When on
+          the mod page on Curse Forge, go to the tab "Files", choose a mod File, and open it. In the File Details, find the
+          section of "Curse Maven Snippet" and expand it. In this section you will find a snippet like this:
+          -
+          implementation fg.deobf("curse.maven:guard-villagers-360203:6793945")
+          -
+          In this snipped you will found the name of the External Mod (guard-villagers), the Mod ID (360203) and the Mod JAR
+          File ID (6793945). You can get these informations and replace in the text above, that you was placed in the "dependencies"
+          block of your "build.gradle" file.
+
+6.  Run a Gradle Sync in IDE. Make sure that don't have errors.
+
+7.  Because of all steps runned above, we need to Refresh Dependencies and regenerate the Runs, for the IDE.
+    Now, open the IDE Terminal, for your mod project. And depending if the Terminal is the "CMD" or
+    "PowerShell", run the commands...
+    -
+    For CMD:        - set JAVA_HOME="C:\Users\junio\AppData\Local\JetBrains\JDK\temurin-17.0.16" & ./gradlew --refresh-dependencies
+    For PowerShell: - $env:JAVA_HOME="C:\Users\junio\AppData\Local\JetBrains\JDK\temurin-17.0.16" ; ./gradlew --refresh-dependencies
+    -
+    After that, run the commands...
+    -
+    For CMD:        - set JAVA_HOME="C:\Users\junio\AppData\Local\JetBrains\JDK\temurin-17.0.16" & ./gradlew genIntellijRuns
+    For PowerShell: - $env:JAVA_HOME="C:\Users\junio\AppData\Local\JetBrains\JDK\temurin-17.0.16" ; ./gradlew genIntellijRuns
+    -
+    This commands, allows you to specify the JDK to be used in the commands "./gradlew --refresh-dependencies" and "./gradlew genIntellijRuns".
+    -
+    NOTE: This commands needs to be runned again, if a changes to the "build.gradle" is made.
+
+8.  It's finished! Now, just run the game with the "runClient" to check if the External Mod is available in-game or
+    check if Methods, Classes or APIs of the External Mod is available to this Project Mod code, depending if you
+    was choose the "runtimeOnly", "compileOnly" or "implementation"!
+
+
+
+
+
+Steps listed here, was extracted from these materials:
+https://github.com/Seabreyh/mc-mana-mod/discussions/103
